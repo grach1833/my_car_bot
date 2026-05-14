@@ -528,15 +528,21 @@ async def car_details(message: Message, state: FSMContext):
             else:
                 print(f"❌ Не найдено: {file_path}")
 
-        if existing_photos:
-            media_group = []
-            for photo_path in existing_photos:
-                media_group.append(InputMediaPhoto(media=FSInputFile(photo_path)))
+       if existing_photos:
+    media_group = []
+    for i, photo_path in enumerate(existing_photos):
+        if i == 0:
+            # Первому фото добавляем подпись при создании
+            media_group.append(InputMediaPhoto(
+                media=FSInputFile(photo_path),
+                caption=text,
+                parse_mode="Markdown"
+            ))
+        else:
+            # Остальные фото без подписи
+            media_group.append(InputMediaPhoto(media=FSInputFile(photo_path)))
 
-            if media_group:
-                media_group[0].caption = text
-                media_group[0].parse_mode = "Markdown"
-                await message.answer_media_group(media=media_group)
+    await message.answer_media_group(media=media_group)
         else:
             await message.answer(f"{text}\n\n⚠️ Фото не загружены", parse_mode="Markdown")
     else:
